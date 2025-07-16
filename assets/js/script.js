@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         width: 75,
         height: 20,
         padding: 10,
-        offsetTop: 60,
+        offsetTop: 10,
         offsetLeft: 30
     };
     
@@ -72,23 +72,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     x: 0, 
                     y: 0, 
                     status: 1,
-                    color: `hsl(${r * 60}, 70%, 50%)`,
-                    scale: 1,
-                    destroyAnimation: 0
+                    color: `hsl(${r * 60}, 70%, 50%)`
                 };
             }
         }
     }
     
     // Draw animated background
-    // Draw animated background with lower opacity
-function drawBackground() {
-    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, `hsla(${time % 360}, 50%, 20%, 0.3)`); // Lower opacity
-    gradient.addColorStop(1, `hsla(${(time + 180) % 360}, 50%, 20%, 0.3)`); // Lower opacity
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
+    function drawBackground() {
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, `hsla(${time % 360}, 50%, 20%, 0.3)`);
+        gradient.addColorStop(1, `hsla(${(time + 180) % 360}, 50%, 20%, 0.3)`);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
     
     // Draw paddle
     function drawPaddle() {
@@ -150,31 +147,20 @@ function drawBackground() {
         for (let r = 0; r < brick.rowCount; r++) {
             for (let c = 0; c < brick.colCount; c++) {
                 const b = bricks[r][c];
-                if (b.status === 1 || b.destroyAnimation > 0) {
+                if (b.status === 1) {
                     const brickX = c * (brick.width + brick.padding) + brick.offsetLeft;
                     const brickY = r * (brick.height + brick.padding) + brick.offsetTop;
                     b.x = brickX;
                     b.y = brickY;
                     
-                    ctx.save();
-                    ctx.translate(brickX + brick.width/2, brickY + brick.height/2);
-                    ctx.scale(b.scale * (1 - b.destroyAnimation), b.scale * (1 - b.destroyAnimation));
-                    
                     ctx.beginPath();
-                    ctx.roundRect(-brick.width/2, -brick.height/2, brick.width, brick.height, 3);
+                    ctx.roundRect(brickX, brickY, brick.width, brick.height, 3);
                     ctx.fillStyle = b.color;
                     ctx.shadowColor = b.color;
                     ctx.shadowBlur = 8;
-                    ctx.globalAlpha = 1 - b.destroyAnimation;
                     ctx.fill();
-                    ctx.globalAlpha = 1;
                     ctx.shadowBlur = 0;
-                    ctx.restore();
-                    
-                    if (b.destroyAnimation > 0) {
-                        b.destroyAnimation += 0.05;
-                        if (b.destroyAnimation >= 1) b.status = 0;
-                    }
+                    ctx.closePath();
                 }
             }
         }
@@ -305,7 +291,6 @@ function drawBackground() {
                     ) {
                         ball.dy = -ball.dy;
                         b.status = 0;
-                        b.destroyAnimation = 0.1;
                         score += 10;
                         scoreElement.textContent = score;
                         
