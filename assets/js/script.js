@@ -17,6 +17,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const pauseSettingsBtn = document.getElementById('pauseSettingsBtn');
     const pauseExitBtn = document.getElementById('pauseExitBtn');
     
+    // Audio setup
+    const backgroundMusic = new Audio('assets/sound/the_deep.mp3');
+    backgroundMusic.loop = true;
+    backgroundMusic.volume = 0.5; // Set volume to 50%
+    console.log('Audio initialized with source:', backgroundMusic.src); // Debug: Log audio source
+    
+    // Check if audio loads successfully
+    backgroundMusic.addEventListener('canplaythrough', () => {
+        console.log('Audio file loaded successfully');
+    });
+    backgroundMusic.addEventListener('error', (e) => {
+        console.error('Audio loading error:', e);
+        alert('Failed to load audio file. Please check if assets/sound/the_deep.mp3 exists and is a valid MP3.');
+    });
+    
+    // Unlock audio context for browsers with autoplay restrictions
+    let audioContextUnlocked = false;
+    function unlockAudioContext() {
+        if (!audioContextUnlocked) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const audioContext = new AudioContext();
+            audioContext.resume().then(() => {
+                console.log('Audio context unlocked');
+                audioContextUnlocked = true;
+            }).catch(e => console.error('Audio context unlock failed:', e));
+        }
+    }
+    
     // Set canvas dimensions
     canvas.width = 800;
     canvas.height = 600;
@@ -28,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let gamePaused = false;
     let animationId;
     let time = 0;
-    let soundEnabled = true;
+    let soundEnabled = true; // Ensure sound is enabled by default
     
     // Paddle
     const paddle = {
@@ -407,6 +435,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function gameOver() {
         gameRunning = false;
         cancelAnimationFrame(animationId);
+        backgroundMusic.pause();
+        backgroundMusic.currentTime = 0;
         ctx.font = '40px Arial';
         ctx.fillStyle = 'white';
         ctx.textAlign = 'center';
@@ -425,6 +455,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function gameWin() {
         gameRunning = false;
         cancelAnimationFrame(animationId);
+        backgroundMusic.pause();
+        backgroundMusic.currentTime = 0;
         ctx.font = '40px Arial';
         ctx.fillStyle = 'white';
         ctx.textAlign = 'center';
@@ -444,6 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (gameRunning && !gamePaused) {
             gamePaused = true;
             cancelAnimationFrame(animationId);
+            backgroundMusic.pause();
             pauseMenu.style.display = 'flex';
             pauseBtn.style.display = 'none';
             resumeBtn.style.display = 'block';
@@ -457,6 +490,14 @@ document.addEventListener('DOMContentLoaded', () => {
             pauseMenu.style.display = 'none';
             resumeBtn.style.display = 'none';
             pauseBtn.style.display = 'block';
+            if (gameRunning && soundEnabled) {
+                console.log('Attempting to resume music'); // Debug
+                backgroundMusic.currentTime = 0; // Reset to start
+                backgroundMusic.play().catch(e => {
+                    console.error('Resume audio failed:', e);
+                    alert('Failed to play audio on resume. Please check browser settings or audio file.');
+                });
+            }
             if (gameRunning) {
                 animationId = requestAnimationFrame(update);
             }
@@ -483,6 +524,17 @@ document.addEventListener('DOMContentLoaded', () => {
         mainMenuBtn.style.display = 'block';
         settingsBtn.style.display = 'block';
         exitBtn.style.display = 'block';
+        if (soundEnabled) {
+            console.log('Attempting to play music on restart'); // Debug
+            backgroundMusic.currentTime = 0; // Reset to start
+            backgroundMusic.play().catch(e => {
+                console.error('Restart audio failed:', e);
+                alert('Failed to play audio on restart. Please check browser settings or audio file.');
+            });
+        } else {
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
+        }
         animationId = requestAnimationFrame(update);
     }
     
@@ -491,6 +543,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gameRunning = false;
         gamePaused = false;
         cancelAnimationFrame(animationId);
+        backgroundMusic.pause();
+        backgroundMusic.currentTime = 0;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.font = '40px Arial';
         ctx.fillStyle = 'white';
@@ -510,6 +564,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Settings
     function toggleSettings() {
         soundEnabled = !soundEnabled;
+        if (!soundEnabled) {
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
+            console.log('Sound disabled, music paused'); // Debug
+        } else if (gameRunning && !gamePaused) {
+            console.log('Sound enabled, attempting to play music'); // Debug
+            backgroundMusic.currentTime = 0; // Reset to start
+            backgroundMusic.play().catch(e => {
+                console.error('Settings audio play failed:', e);
+                alert('Failed to play audio after enabling sound. Please check browser settings or audio file.');
+            });
+        }
         alert(`Sound ${soundEnabled ? 'Enabled' : 'Disabled'}`);
     }
     
@@ -518,6 +584,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gameRunning = false;
         gamePaused = false;
         cancelAnimationFrame(animationId);
+        backgroundMusic.pause();
+        backgroundMusic.currentTime = 0;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.font = '40px Arial';
         ctx.fillStyle = 'white';
@@ -552,6 +620,15 @@ document.addEventListener('DOMContentLoaded', () => {
         settingsBtn.style.display = 'block';
         exitBtn.style.display = 'block';
         pauseMenu.style.display = 'none';
+        unlockAudioContext(); // Unlock audio context on start
+        if (soundEnabled) {
+            console.log('Attempting to play music on start'); // Debug
+            backgroundMusic.currentTime = 0; // Reset to start
+            backgroundMusic.play().catch(e => {
+                console.error('Start audio failed:', e);
+                alert('Failed to play audio on start. Please check browser settings or audio file.');
+            });
+        }
         animationId = requestAnimationFrame(update);
     }
     
