@@ -18,7 +18,6 @@ body {
     flex-direction: row;
     align-items: flex-start;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
 }
 
 canvas {
@@ -37,26 +36,82 @@ canvas {
     margin-left: 10px;
 }
 
-button {
-    background: #4CAF50;
+.game-btn {
+    background: linear-gradient(45deg, #4CAF50, #66BB6A);
     border: none;
     color: white;
-    padding: 8px 16px;
+    padding: 10px 20px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    margin: 4px 0;
+    margin: 6px 0;
     cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.3s;
+    border-radius: 6px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.5s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-button:hover {
-    background: #45a049;
-    transform: scale(1.05);
+.game-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
+    background: linear-gradient(45deg, #45A049, #5C9B5E);
+}
+
+.game-btn:active {
+    transform: scale(0.95);
+}
+
+.game-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.game-btn:hover::before {
+    left: 100%;
 }
 
 .score, .lives {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    font-size: 18px;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.pause-menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 800px;
+    height: 600px;
+    background: rgba(10, 10, 26, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.pause-menu-content {
+    background: #1a1a2e;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.pause-menu-content h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.pause-menu-content .game-btn {
+    width: 200px;
+    margin: 10px 0;
 }

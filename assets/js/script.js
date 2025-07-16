@@ -4,6 +4,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const scoreElement = document.getElementById('score');
     const livesElement = document.getElementById('lives');
     const startBtn = document.getElementById('startBtn');
+    const resumeBtn = document.getElementById('resumeBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const mainMenuBtn = document.getElementById('mainMenuBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const exitBtn = document.getElementById('exitBtn');
+    const pauseMenu = document.getElementById('pauseMenu');
+    const pauseResumeBtn = document.getElementById('pauseResumeBtn');
+    const pauseRestartBtn = document.getElementById('pauseRestartBtn');
+    const pauseMainMenuBtn = document.getElementById('pauseMainMenuBtn');
+    const pauseSettingsBtn = document.getElementById('pauseSettingsBtn');
+    const pauseExitBtn = document.getElementById('pauseExitBtn');
     
     // Set canvas dimensions
     canvas.width = 800;
@@ -13,8 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let score = 0;
     let lives = 3;
     let gameRunning = false;
+    let gamePaused = false;
     let animationId;
     let time = 0;
+    let soundEnabled = true;
     
     // Paddle
     const paddle = {
@@ -89,7 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Draw paddle
     function drawPaddle() {
-        // Animate paddle scale
         paddle.scale += paddle.scaleDirection * 0.01;
         if (paddle.scale > 1.1 || paddle.scale < 0.9) paddle.scaleDirection *= -1;
         
@@ -102,11 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
             5
         );
         
-        // Color transition
         const hue = (time % 360 + 120) % 360;
         ctx.fillStyle = `hsl(${hue}, 70%, 50%)`;
-        
-        // Enhanced glow effect
         ctx.shadowColor = ctx.fillStyle;
         ctx.shadowBlur = 20;
         ctx.fill();
@@ -116,11 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Draw ball with trail
     function drawBall() {
-        // Update trail
         ball.trail.push({ x: ball.x, y: ball.y, life: 20 });
         if (ball.trail.length > 20) ball.trail.shift();
         
-        // Draw trail
         ball.trail.forEach((point, i) => {
             ctx.beginPath();
             ctx.arc(point.x, point.y, ball.radius * (point.life / 20), 0, Math.PI * 2);
@@ -131,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         ball.trail = ball.trail.filter(p => p.life > 0);
         
-        // Draw main ball
         ctx.beginPath();
         ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
         ctx.fillStyle = `hsl(${(time + 60) % 360}, 70%, 50%)`;
@@ -168,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Power-up system
     function createPowerUp(x, y) {
-        if (Math.random() < 0.2) { // 20% chance to spawn power-up
+        if (Math.random() < 0.2) {
             const type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
             powerUps.push({
                 x: x,
@@ -189,7 +196,6 @@ document.addEventListener('DOMContentLoaded', () => {
             p.y += p.speedY;
             p.spin += 0.1;
             
-            // Check paddle collision
             if (
                 p.y + p.height > paddle.y &&
                 p.y < paddle.y + paddle.height &&
@@ -310,12 +316,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Update game state
     function update() {
+        if (gamePaused) return;
+        
         time++;
         
-        // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        // Draw game elements
         drawBackground();
         drawBricks();
         drawPaddle();
@@ -323,22 +329,18 @@ document.addEventListener('DOMContentLoaded', () => {
         drawParticles();
         drawPowerUps();
         
-        // Collision detection
         collisionDetection();
         
-        // Wall collision (left/right)
         if (ball.x + ball.dx > canvas.width - ball.radius || ball.x + ball.dx < ball.radius) {
             ball.dx = -ball.dx;
             createParticles(ball.x, ball.y, ball.baseColor);
         }
         
-        // Wall collision (top)
         if (ball.y + ball.dy < ball.radius) {
             ball.dy = -ball.dy;
             createParticles(ball.x, ball.y, ball.baseColor);
         }
         
-        // Paddle collision
         if (
             ball.y + ball.dy > paddle.y - ball.radius &&
             ball.y + ball.dy < paddle.y + paddle.height - ball.radius &&
@@ -351,7 +353,6 @@ document.addEventListener('DOMContentLoaded', () => {
             createParticles(ball.x, ball.y, paddle.baseColor);
         }
         
-        // Bottom wall (lose life)
         if (ball.y + ball.dy > canvas.height - ball.radius) {
             if (lives > 1) {
                 lives--;
@@ -362,25 +363,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // Move paddle
         paddle.x += paddle.dx;
         
-        // Paddle boundary
         if (paddle.x < 0) {
             paddle.x = 0;
         } else if (paddle.x + paddle.width > canvas.width) {
             paddle.x = canvas.width - paddle.width;
         }
         
-        // Move ball
         ball.x += ball.dx;
         ball.y += ball.dy;
         
-        // Update particles and power-ups
         updateParticles();
         updatePowerUps();
         
-        // Continue animation if game is running
         if (gameRunning) {
             animationId = requestAnimationFrame(update);
         }
@@ -400,8 +396,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         gameRunning = false;
         setTimeout(() => {
-            gameRunning = true;
-            animationId = requestAnimationFrame(update);
+            if (!gamePaused) {
+                gameRunning = true;
+                animationId = requestAnimationFrame(update);
+            }
         }, 1000);
     }
     
@@ -415,6 +413,12 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
         startBtn.textContent = 'Play Again';
         startBtn.style.display = 'block';
+        resumeBtn.style.display = 'none';
+        pauseBtn.style.display = 'none';
+        restartBtn.style.display = 'block';
+        mainMenuBtn.style.display = 'block';
+        settingsBtn.style.display = 'block';
+        exitBtn.style.display = 'block';
     }
     
     // Game win
@@ -427,6 +431,128 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillText('YOU WIN!', canvas.width / 2, canvas.height / 2);
         startBtn.textContent = 'Play Again';
         startBtn.style.display = 'block';
+        resumeBtn.style.display = 'none';
+        pauseBtn.style.display = 'none';
+        restartBtn.style.display = 'block';
+        mainMenuBtn.style.display = 'block';
+        settingsBtn.style.display = 'block';
+        exitBtn.style.display = 'block';
+    }
+    
+    // Pause game
+    function pauseGame() {
+        if (gameRunning && !gamePaused) {
+            gamePaused = true;
+            cancelAnimationFrame(animationId);
+            pauseMenu.style.display = 'flex';
+            pauseBtn.style.display = 'none';
+            resumeBtn.style.display = 'block';
+        }
+    }
+    
+    // Resume game
+    function resumeGame() {
+        if (gamePaused) {
+            gamePaused = false;
+            pauseMenu.style.display = 'none';
+            resumeBtn.style.display = 'none';
+            pauseBtn.style.display = 'block';
+            if (gameRunning) {
+                animationId = requestAnimationFrame(update);
+            }
+        }
+    }
+    
+    // Restart game
+    function restartGame() {
+        score = 0;
+        lives = 3;
+        scoreElement.textContent = score;
+        livesElement.textContent = lives;
+        initBricks();
+        resetBall();
+        powerUps.length = 0;
+        gameRunning = true;
+        gamePaused = false;
+        pauseMenu.style.display = 'none';
+        startBtn.textContent = 'Start Game';
+        startBtn.style.display = 'none';
+        resumeBtn.style.display = 'none';
+        pauseBtn.style.display = 'block';
+        restartBtn.style.display = 'block';
+        mainMenuBtn.style.display = 'block';
+        settingsBtn.style.display = 'block';
+        exitBtn.style.display = 'block';
+        animationId = requestAnimationFrame(update);
+    }
+    
+    // Main menu
+    function mainMenu() {
+        gameRunning = false;
+        gamePaused = false;
+        cancelAnimationFrame(animationId);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.font = '40px Arial';
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.fillText('BREAKOUT', canvas.width / 2, canvas.height / 2);
+        pauseMenu.style.display = 'none';
+        startBtn.textContent = 'Start Game';
+        startBtn.style.display = 'block';
+        resumeBtn.style.display = 'none';
+        pauseBtn.style.display = 'none';
+        restartBtn.style.display = 'block';
+        mainMenuBtn.style.display = 'none';
+        settingsBtn.style.display = 'block';
+        exitBtn.style.display = 'block';
+    }
+    
+    // Settings
+    function toggleSettings() {
+        soundEnabled = !soundEnabled;
+        alert(`Sound ${soundEnabled ? 'Enabled' : 'Disabled'}`);
+    }
+    
+    // Exit game
+    function exitGame() {
+        gameRunning = false;
+        gamePaused = false;
+        cancelAnimationFrame(animationId);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.font = '40px Arial';
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.fillText('THANKS FOR PLAYING!', canvas.width / 2, canvas.height / 2);
+        pauseMenu.style.display = 'none';
+        startBtn.style.display = 'block';
+        resumeBtn.style.display = 'none';
+        pauseBtn.style.display = 'none';
+        restartBtn.style.display = 'none';
+        mainMenuBtn.style.display = 'none';
+        settingsBtn.style.display = 'none';
+        exitBtn.style.display = 'none';
+    }
+    
+    // Start game
+    function startGame() {
+        score = 0;
+        lives = 3;
+        scoreElement.textContent = score;
+        livesElement.textContent = lives;
+        initBricks();
+        resetBall();
+        powerUps.length = 0;
+        gameRunning = true;
+        gamePaused = false;
+        startBtn.style.display = 'none';
+        resumeBtn.style.display = 'none';
+        pauseBtn.style.display = 'block';
+        restartBtn.style.display = 'block';
+        mainMenuBtn.style.display = 'block';
+        settingsBtn.style.display = 'block';
+        exitBtn.style.display = 'block';
+        pauseMenu.style.display = 'none';
+        animationId = requestAnimationFrame(update);
     }
     
     // Keydown event
@@ -435,6 +561,8 @@ document.addEventListener('DOMContentLoaded', () => {
             paddle.dx = paddle.speed;
         } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
             paddle.dx = -paddle.speed;
+        } else if (e.key === 'Escape' && gameRunning && !gamePaused) {
+            pauseGame();
         }
     }
     
@@ -468,27 +596,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Start game
-    function startGame() {
-        score = 0;
-        lives = 3;
-        scoreElement.textContent = score;
-        livesElement.textContent = lives;
-        initBricks();
-        resetBall();
-        powerUps.length = 0;
-        gameRunning = true;
-        startBtn.style.display = 'none';
-        animationId = requestAnimationFrame(update);
-    }
-    
     // Event listeners
     document.addEventListener('keydown', keyDown);
     document.addEventListener('keyup', keyUp);
     canvas.addEventListener('mousemove', mouseMove);
     canvas.addEventListener('touchmove', touchMove, { passive: false });
     startBtn.addEventListener('click', startGame);
+    resumeBtn.addEventListener('click', resumeGame);
+    pauseBtn.addEventListener('click', pauseGame);
+    restartBtn.addEventListener('click', restartGame);
+    mainMenuBtn.addEventListener('click', mainMenu);
+    settingsBtn.addEventListener('click', toggleSettings);
+    exitBtn.addEventListener('click', exitGame);
+    pauseResumeBtn.addEventListener('click', resumeGame);
+    pauseRestartBtn.addEventListener('click', restartGame);
+    pauseMainMenuBtn.addEventListener('click', mainMenu);
+    pauseSettingsBtn.addEventListener('click', toggleSettings);
+    pauseExitBtn.addEventListener('click', exitGame);
     
     // Initialize
     initBricks();
+    ctx.font = '40px Arial';
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText('BREAKOUT', canvas.width / 2, canvas.height / 2);
 });

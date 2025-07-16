@@ -12,7 +12,23 @@
         <div class="ui">
             <div class="score">Score: <span id="score">0</span></div>
             <div class="lives">Lives: <span id="lives">3</span></div>
-            <button id="startBtn">Start Game</button>
+            <button id="startBtn" class="game-btn">Start Game</button>
+            <button id="resumeBtn" class="game-btn" style="display: none;">Resume Game</button>
+            <button id="pauseBtn" class="game-btn">Pause Game</button>
+            <button id="restartBtn" class="game-btn">Restart Game</button>
+            <button id="mainMenuBtn" class="game-btn">Main Menu</button>
+            <button id="settingsBtn" class="game-btn">Settings</button>
+            <button id="exitBtn" class="game-btn">Exit Game</button>
+        </div>
+        <div id="pauseMenu" class="pause-menu" style="display: none;">
+            <div class="pause-menu-content">
+                <h2>Game Paused</h2>
+                <button id="pauseResumeBtn" class="game-btn">Resume Game</button>
+                <button id="pauseRestartBtn" class="game-btn">Restart Game</button>
+                <button id="pauseMainMenuBtn" class="game-btn">Main Menu</button>
+                <button id="pauseSettingsBtn" class="game-btn">Settings</button>
+                <button id="pauseExitBtn" class="game-btn">Exit Game</button>
+            </div>
         </div>
     </div>
     <script src="assets\js\script.js"></script>
