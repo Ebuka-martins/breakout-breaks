@@ -16,23 +16,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const pauseMainMenuBtn = document.getElementById('pauseMainMenuBtn');
     const pauseSettingsBtn = document.getElementById('pauseSettingsBtn');
     const pauseExitBtn = document.getElementById('pauseExitBtn');
+    const settingsMenu = document.getElementById('settingsMenu');
+    const enableSoundBtn = document.getElementById('enableSoundBtn');
+    const disableSoundBtn = document.getElementById('disableSoundBtn');
+    const settingsBackBtn = document.getElementById('settingsBackBtn');
     
     // Audio setup
     const backgroundMusic = new Audio('assets/sound/the_deep.mp3');
     backgroundMusic.loop = true;
-    backgroundMusic.volume = 0.5; // Set volume to 50%
-    console.log('Audio initialized with source:', backgroundMusic.src); // Debug: Log audio source
+    backgroundMusic.volume = 0.5;
+    console.log('Audio initialized with source:', backgroundMusic.src);
     
-    // Check if audio loads successfully
     backgroundMusic.addEventListener('canplaythrough', () => {
         console.log('Audio file loaded successfully');
     });
     backgroundMusic.addEventListener('error', (e) => {
         console.error('Audio loading error:', e);
-        alert('Failed to load audio file. Please check if assets/sound/the_deep.mp3 exists and is a valid MP3.');
     });
     
-    // Unlock audio context for browsers with autoplay restrictions
     let audioContextUnlocked = false;
     function unlockAudioContext() {
         if (!audioContextUnlocked) {
@@ -45,20 +46,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Set canvas dimensions
     canvas.width = 800;
     canvas.height = 600;
     
-    // Game variables
     let score = 0;
     let lives = 3;
     let gameRunning = false;
     let gamePaused = false;
     let animationId;
     let time = 0;
-    let soundEnabled = true; // Ensure sound is enabled by default
+    let soundEnabled = true;
     
-    // Paddle
     const paddle = {
         width: 100,
         height: 15,
@@ -71,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         scaleDirection: 1
     };
     
-    // Ball
     const ball = {
         radius: 10,
         x: canvas.width / 2,
@@ -83,7 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
         trail: []
     };
     
-    // Bricks
     const brick = {
         rowCount: 5,
         colCount: 9,
@@ -96,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let bricks = [];
     
-    // Power-ups
     const powerUps = [];
     const powerUpTypes = [
         { type: 'expand', color: '#FFD700', effect: () => paddle.width *= 1.5 },
@@ -104,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
         { type: 'life', color: '#00FF00', effect: () => lives++ }
     ];
     
-    // Initialize bricks
     function initBricks() {
         bricks = [];
         for (let r = 0; r < brick.rowCount; r++) {
@@ -120,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Draw animated background
     function drawBackground() {
         const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
         gradient.addColorStop(0, `hsla(${time % 360}, 50%, 20%, 0.3)`);
@@ -129,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
     
-    // Draw paddle
     function drawPaddle() {
         paddle.scale += paddle.scaleDirection * 0.01;
         if (paddle.scale > 1.1 || paddle.scale < 0.9) paddle.scaleDirection *= -1;
@@ -152,7 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.closePath();
     }
     
-    // Draw ball with trail
     function drawBall() {
         ball.trail.push({ x: ball.x, y: ball.y, life: 20 });
         if (ball.trail.length > 20) ball.trail.shift();
@@ -177,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.closePath();
     }
     
-    // Draw bricks
     function drawBricks() {
         for (let r = 0; r < brick.rowCount; r++) {
             for (let c = 0; c < brick.colCount; c++) {
@@ -201,7 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Power-up system
     function createPowerUp(x, y) {
         if (Math.random() < 0.2) {
             const type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
@@ -257,7 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Enhanced particle effects
     const particles = [];
     
     function createParticles(x, y, color) {
@@ -311,7 +299,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Collision detection
     function collisionDetection() {
         for (let r = 0; r < brick.rowCount; r++) {
             for (let c = 0; c < brick.colCount; c++) {
@@ -342,7 +329,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Update game state
     function update() {
         if (gamePaused) return;
         
@@ -410,7 +396,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Reset ball position
     function resetBall() {
         ball.x = canvas.width / 2;
         ball.y = canvas.height / 2;
@@ -431,7 +416,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
     
-    // Game over
     function gameOver() {
         gameRunning = false;
         cancelAnimationFrame(animationId);
@@ -449,9 +433,9 @@ document.addEventListener('DOMContentLoaded', () => {
         mainMenuBtn.style.display = 'block';
         settingsBtn.style.display = 'block';
         exitBtn.style.display = 'block';
+        settingsMenu.style.display = 'none';
     }
     
-    // Game win
     function gameWin() {
         gameRunning = false;
         cancelAnimationFrame(animationId);
@@ -469,9 +453,9 @@ document.addEventListener('DOMContentLoaded', () => {
         mainMenuBtn.style.display = 'block';
         settingsBtn.style.display = 'block';
         exitBtn.style.display = 'block';
+        settingsMenu.style.display = 'none';
     }
     
-    // Pause game
     function pauseGame() {
         if (gameRunning && !gamePaused) {
             gamePaused = true;
@@ -480,22 +464,22 @@ document.addEventListener('DOMContentLoaded', () => {
             pauseMenu.style.display = 'flex';
             pauseBtn.style.display = 'none';
             resumeBtn.style.display = 'block';
+            settingsMenu.style.display = 'none';
         }
     }
     
-    // Resume game
     function resumeGame() {
         if (gamePaused) {
             gamePaused = false;
             pauseMenu.style.display = 'none';
             resumeBtn.style.display = 'none';
             pauseBtn.style.display = 'block';
+            settingsMenu.style.display = 'none';
             if (gameRunning && soundEnabled) {
-                console.log('Attempting to resume music'); // Debug
-                backgroundMusic.currentTime = 0; // Reset to start
+                console.log('Attempting to resume music');
+                backgroundMusic.currentTime = 0;
                 backgroundMusic.play().catch(e => {
                     console.error('Resume audio failed:', e);
-                    alert('Failed to play audio on resume. Please check browser settings or audio file.');
                 });
             }
             if (gameRunning) {
@@ -504,7 +488,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Restart game
     function restartGame() {
         score = 0;
         lives = 3;
@@ -516,6 +499,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameRunning = true;
         gamePaused = false;
         pauseMenu.style.display = 'none';
+        settingsMenu.style.display = 'none';
         startBtn.textContent = 'Start Game';
         startBtn.style.display = 'none';
         resumeBtn.style.display = 'none';
@@ -525,11 +509,10 @@ document.addEventListener('DOMContentLoaded', () => {
         settingsBtn.style.display = 'block';
         exitBtn.style.display = 'block';
         if (soundEnabled) {
-            console.log('Attempting to play music on restart'); // Debug
-            backgroundMusic.currentTime = 0; // Reset to start
+            console.log('Attempting to play music on restart');
+            backgroundMusic.currentTime = 0;
             backgroundMusic.play().catch(e => {
                 console.error('Restart audio failed:', e);
-                alert('Failed to play audio on restart. Please check browser settings or audio file.');
             });
         } else {
             backgroundMusic.pause();
@@ -538,7 +521,6 @@ document.addEventListener('DOMContentLoaded', () => {
         animationId = requestAnimationFrame(update);
     }
     
-    // Main menu
     function mainMenu() {
         gameRunning = false;
         gamePaused = false;
@@ -551,6 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.textAlign = 'center';
         ctx.fillText('BREAKOUT', canvas.width / 2, canvas.height / 2);
         pauseMenu.style.display = 'none';
+        settingsMenu.style.display = 'none';
         startBtn.textContent = 'Start Game';
         startBtn.style.display = 'block';
         resumeBtn.style.display = 'none';
@@ -561,25 +544,48 @@ document.addEventListener('DOMContentLoaded', () => {
         exitBtn.style.display = 'block';
     }
     
-    // Settings
-    function toggleSettings() {
-        soundEnabled = !soundEnabled;
-        if (!soundEnabled) {
-            backgroundMusic.pause();
-            backgroundMusic.currentTime = 0;
-            console.log('Sound disabled, music paused'); // Debug
-        } else if (gameRunning && !gamePaused) {
-            console.log('Sound enabled, attempting to play music'); // Debug
-            backgroundMusic.currentTime = 0; // Reset to start
-            backgroundMusic.play().catch(e => {
-                console.error('Settings audio play failed:', e);
-                alert('Failed to play audio after enabling sound. Please check browser settings or audio file.');
-            });
-        }
-        alert(`Sound ${soundEnabled ? 'Enabled' : 'Disabled'}`);
+    function showSettings() {
+        settingsMenu.style.display = 'flex';
+        pauseMenu.style.display = 'none';
+        updateSoundButtonStates();
     }
     
-    // Exit game
+    function hideSettings() {
+        settingsMenu.style.display = 'none';
+        if (gamePaused) {
+            pauseMenu.style.display = 'flex';
+        }
+    }
+    
+    function enableSound() {
+        if (!soundEnabled) {
+            soundEnabled = true;
+            if (gameRunning && !gamePaused) {
+                console.log('Sound enabled, attempting to play music');
+                backgroundMusic.currentTime = 0;
+                backgroundMusic.play().catch(e => {
+                    console.error('Settings audio play failed:', e);
+                });
+            }
+            updateSoundButtonStates();
+        }
+    }
+    
+    function disableSound() {
+        if (soundEnabled) {
+            soundEnabled = false;
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
+            console.log('Sound disabled, music paused');
+            updateSoundButtonStates();
+        }
+    }
+    
+    function updateSoundButtonStates() {
+        enableSoundBtn.disabled = soundEnabled;
+        disableSoundBtn.disabled = !soundEnabled;
+    }
+    
     function exitGame() {
         gameRunning = false;
         gamePaused = false;
@@ -592,6 +598,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.textAlign = 'center';
         ctx.fillText('THANKS FOR PLAYING!', canvas.width / 2, canvas.height / 2);
         pauseMenu.style.display = 'none';
+        settingsMenu.style.display = 'none';
         startBtn.style.display = 'block';
         resumeBtn.style.display = 'none';
         pauseBtn.style.display = 'none';
@@ -601,7 +608,6 @@ document.addEventListener('DOMContentLoaded', () => {
         exitBtn.style.display = 'none';
     }
     
-    // Start game
     function startGame() {
         score = 0;
         lives = 3;
@@ -620,19 +626,18 @@ document.addEventListener('DOMContentLoaded', () => {
         settingsBtn.style.display = 'block';
         exitBtn.style.display = 'block';
         pauseMenu.style.display = 'none';
-        unlockAudioContext(); // Unlock audio context on start
+        settingsMenu.style.display = 'none';
+        unlockAudioContext();
         if (soundEnabled) {
-            console.log('Attempting to play music on start'); // Debug
-            backgroundMusic.currentTime = 0; // Reset to start
+            console.log('Attempting to play music on start');
+            backgroundMusic.currentTime = 0;
             backgroundMusic.play().catch(e => {
                 console.error('Start audio failed:', e);
-                alert('Failed to play audio on start. Please check browser settings or audio file.');
             });
         }
         animationId = requestAnimationFrame(update);
     }
     
-    // Keydown event
     function keyDown(e) {
         if (e.key === 'Right' || e.key === 'ArrowRight') {
             paddle.dx = paddle.speed;
@@ -643,7 +648,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Keyup event
     function keyUp(e) {
         if (
             e.key === 'Right' ||
@@ -655,7 +659,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Mouse/Touch movement
     function mouseMove(e) {
         const relativeX = e.clientX - canvas.offsetLeft;
         if (relativeX > 0 && relativeX < canvas.width) {
@@ -663,7 +666,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Touch movement for mobile
     function touchMove(e) {
         e.preventDefault();
         const touch = e.touches[0] || e.changedTouches[0];
@@ -673,7 +675,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Event listeners
     document.addEventListener('keydown', keyDown);
     document.addEventListener('keyup', keyUp);
     canvas.addEventListener('mousemove', mouseMove);
@@ -683,18 +684,21 @@ document.addEventListener('DOMContentLoaded', () => {
     pauseBtn.addEventListener('click', pauseGame);
     restartBtn.addEventListener('click', restartGame);
     mainMenuBtn.addEventListener('click', mainMenu);
-    settingsBtn.addEventListener('click', toggleSettings);
+    settingsBtn.addEventListener('click', showSettings);
     exitBtn.addEventListener('click', exitGame);
     pauseResumeBtn.addEventListener('click', resumeGame);
     pauseRestartBtn.addEventListener('click', restartGame);
     pauseMainMenuBtn.addEventListener('click', mainMenu);
-    pauseSettingsBtn.addEventListener('click', toggleSettings);
+    pauseSettingsBtn.addEventListener('click', showSettings);
     pauseExitBtn.addEventListener('click', exitGame);
+    enableSoundBtn.addEventListener('click', enableSound);
+    disableSoundBtn.addEventListener('click', disableSound);
+    settingsBackBtn.addEventListener('click', hideSettings);
     
-    // Initialize
     initBricks();
     ctx.font = '40px Arial';
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
     ctx.fillText('BREAKOUT', canvas.width / 2, canvas.height / 2);
+    updateSoundButtonStates();
 });

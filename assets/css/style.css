@@ -37,7 +37,6 @@ canvas {
 }
 
 .game-btn {
-    background: linear-gradient(45deg, #4CAF50, #66BB6A);
     border: none;
     color: white;
     padding: 10px 20px;
@@ -53,10 +52,34 @@ canvas {
     overflow: hidden;
 }
 
-.game-btn:hover {
+.game-btn:not(.enable-btn):not(.disable-btn) {
+    background: linear-gradient(45deg, #4CAF50, #66BB6A);
+}
+
+.game-btn:not(.enable-btn):not(.disable-btn):hover {
     transform: scale(1.1);
     box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
     background: linear-gradient(45deg, #45A049, #5C9B5E);
+}
+
+.enable-btn {
+    background: linear-gradient(45deg, #4CAF50, #66BB6A);
+}
+
+.enable-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
+    background: linear-gradient(45deg, #45A049, #5C9B5E);
+}
+
+.disable-btn {
+    background: linear-gradient(45deg, #F44336, #EF5350);
+}
+
+.disable-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(244, 67, 54, 0.7);
+    background: linear-gradient(45deg, #D32F2F, #E53935);
 }
 
 .game-btn:active {
@@ -84,7 +107,7 @@ canvas {
     text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
-.pause-menu {
+.pause-menu, .settings-menu {
     position: absolute;
     top: 0;
     left: 0;
@@ -97,7 +120,7 @@ canvas {
     z-index: 10;
 }
 
-.pause-menu-content {
+.pause-menu-content, .settings-menu-content {
     background: #1a1a2e;
     padding: 30px;
     border-radius: 10px;
@@ -105,13 +128,13 @@ canvas {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
-.pause-menu-content h2 {
+.pause-menu-content h2, .settings-menu-content h2, .settings-menu-content h3 {
     margin-bottom: 20px;
     font-size: 24px;
     text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
-.pause-menu-content .game-btn {
+.pause-menu-content .game-btn, .settings-menu-content .game-btn {
     width: 200px;
     margin: 10px 0;
 }
