@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const enableSoundBtn = document.getElementById('enableSoundBtn');
     const disableSoundBtn = document.getElementById('disableSoundBtn');
     const settingsBackBtn = document.getElementById('settingsBackBtn');
+    const soundStatus = document.getElementById('soundStatus');
     
     // Audio setup
     const backgroundMusic = new Audio('assets/sound/the_deep.mp3');
@@ -560,6 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function enableSound() {
         if (!soundEnabled) {
             soundEnabled = true;
+            soundStatus.textContent = 'Sound Enabled';
             if (gameRunning && !gamePaused) {
                 console.log('Sound enabled, attempting to play music');
                 backgroundMusic.currentTime = 0;
@@ -574,6 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function disableSound() {
         if (soundEnabled) {
             soundEnabled = false;
+            soundStatus.textContent = 'Sound Disabled';
             backgroundMusic.pause();
             backgroundMusic.currentTime = 0;
             console.log('Sound disabled, music paused');
@@ -584,6 +587,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateSoundButtonStates() {
         enableSoundBtn.disabled = soundEnabled;
         disableSoundBtn.disabled = !soundEnabled;
+        soundStatus.textContent = soundEnabled ? 'Sound Enabled' : 'Sound Disabled';
     }
     
     function exitGame() {

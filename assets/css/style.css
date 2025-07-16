@@ -134,6 +134,12 @@ canvas {
     text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
+.sound-status {
+    margin-bottom: 20px;
+    font-size: 18px;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
 .pause-menu-content .game-btn, .settings-menu-content .game-btn {
     width: 200px;
     margin: 10px 0;
