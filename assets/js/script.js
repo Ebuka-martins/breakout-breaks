@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const disableSoundBtn = document.getElementById('disableSoundBtn');
     const settingsBackBtn = document.getElementById('settingsBackBtn');
     const soundStatus = document.getElementById('soundStatus');
+    const leftBtn = document.getElementById('leftBtn');
+    const rightBtn = document.getElementById('rightBtn');
     
     // Audio setup
     const backgroundMusic = new Audio('assets/sound/the_deep.mp3');
@@ -678,6 +680,37 @@ document.addEventListener('DOMContentLoaded', () => {
             paddle.x = relativeX - paddle.width / 2;
         }
     }
+    
+    // Touch controls for directional buttons
+    function handleTouchStart(direction) {
+        paddle.dx = direction === 'left' ? -paddle.speed : paddle.speed;
+    }
+    
+    function handleTouchEnd() {
+        paddle.dx = 0;
+    }
+    
+    // Event listeners for directional buttons
+    leftBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        handleTouchStart('left');
+    });
+    leftBtn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        handleTouchEnd();
+    });
+    rightBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        handleTouchStart('right');
+    });
+    rightBtn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        handleTouchEnd();
+    });
+    
+    // Prevent mouse clicks on touch buttons to avoid conflicts on hybrid devices
+    leftBtn.addEventListener('mousedown', (e) => e.preventDefault());
+    rightBtn.addEventListener('mousedown', (e) => e.preventDefault());
     
     document.addEventListener('keydown', keyDown);
     document.addEventListener('keyup', keyUp);

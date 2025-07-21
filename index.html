@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dynamic Breakout Game</title>
-    <link rel="stylesheet" href="assets\css\style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
     <div class="game-container">
@@ -19,6 +19,10 @@
             <button id="mainMenuBtn" class="game-btn">Main Menu</button>
             <button id="settingsBtn" class="game-btn">Settings</button>
             <button id="exitBtn" class="game-btn">Exit Game</button>
+            <div class="direction-controls">
+                <button id="leftBtn" class="game-btn direction-btn">←</button>
+                <button id="rightBtn" class="game-btn direction-btn">→</button>
+            </div>
         </div>
         <div id="pauseMenu" class="pause-menu" style="display: none;">
             <div class="pause-menu-content">
@@ -41,6 +45,6 @@
             </div>
         </div>
     </div>
-    <script src="assets\js\script.js"></script>
+    <script src="assets/js/script.js"></script>
 </body>
 </html>

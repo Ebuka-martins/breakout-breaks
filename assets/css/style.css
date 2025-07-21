@@ -52,11 +52,11 @@ canvas {
     overflow: hidden;
 }
 
-.game-btn:not(.enable-btn):not(.disable-btn) {
+.game-btn:not(.enable-btn):not(.disable-btn):not(.direction-btn) {
     background: linear-gradient(45deg, #4CAF50, #66BB6A);
 }
 
-.game-btn:not(.enable-btn):not(.disable-btn):hover {
+.game-btn:not(.enable-btn):not(.disable-btn):not(.direction-btn):hover {
     transform: scale(1.1);
     box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
     background: linear-gradient(45deg, #45A049, #5C9B5E);
@@ -80,6 +80,19 @@ canvas {
     transform: scale(1.1);
     box-shadow: 0 0 15px rgba(244, 67, 54, 0.7);
     background: linear-gradient(45deg, #D32F2F, #E53935);
+}
+
+.direction-btn {
+    background: linear-gradient(45deg, #2196F3, #42A5F5);
+    font-size: 20px;
+    padding: 10px 20px;
+    display: none; /* Hidden by default on non-touch devices */
+}
+
+.direction-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(33, 150, 243, 0.7);
+    background: linear-gradient(45deg, #1976D2, #3F8BCB);
 }
 
 .game-btn:active {
@@ -145,6 +158,13 @@ canvas {
     margin: 10px 0;
 }
 
+.direction-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
 /* Media Queries for Responsive Design */
 
 /* Mobile Devices (up to 600px, e.g., iPhone SE, iPhone 14, Samsung Galaxy S series) */
@@ -174,12 +194,19 @@ canvas {
         max-width: 400px;
     }
 
-    .game-btn {
+    .game-btn:not(.direction-btn) {
         padding: 8px 16px;
         font-size: 14px;
         margin: 4px;
         width: auto;
         min-width: 100px;
+    }
+
+    .direction-btn {
+        display: inline-block;
+        padding: 12px 20px;
+        font-size: 18px;
+        min-width: 60px;
     }
 
     .pause-menu, .settings-menu {
@@ -210,6 +237,11 @@ canvas {
         font-size: 14px;
         margin-bottom: 8px;
     }
+
+    .direction-controls {
+        margin-top: 8px;
+        gap: 8px;
+    }
 }
 
 /* Tablets and Larger Mobile Devices (601px to 1024px, e.g., iPad, Galaxy Tab) */
@@ -239,12 +271,19 @@ canvas {
         max-width: 600px;
     }
 
-    .game-btn {
+    .game-btn:not(.direction-btn) {
         padding: 10px 18px;
         font-size: 15px;
         margin: 5px;
         width: auto;
         min-width: 120px;
+    }
+
+    .direction-btn {
+        display: inline-block;
+        padding: 12px 24px;
+        font-size: 20px;
+        min-width: 80px;
     }
 
     .pause-menu, .settings-menu {
@@ -275,6 +314,11 @@ canvas {
         font-size: 16px;
         margin-bottom: 10px;
     }
+
+    .direction-controls {
+        margin-top: 10px;
+        gap: 10px;
+    }
 }
 
 /* Ensure touch devices have proper touch feedback */
@@ -299,5 +343,9 @@ canvas {
 
     .disable-btn:active {
         background: linear-gradient(45deg, #C62828, #D32F2F);
+    }
+
+    .direction-btn:active {
+        background: linear-gradient(45deg, #1976D2, #3F8BCB);
     }
 }
